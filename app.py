@@ -6,6 +6,7 @@ from flask_jwt import JWT
 
 from security import authenticate, identity
 from resources.user import UserRegister
+from resources.task import Task, TaskList
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
@@ -20,7 +21,9 @@ if os.environ.get('DATABASE_URL') is None:
 
 jwt = JWT(app, authenticate, identity)
 
-api.add_resource(UserRegister, '/register')
+api.add_resource(UserRegister, '/api/register')
+api.add_resource(Task, '/api/task')
+api.add_resource(TaskList, '/api/tasks')
 
 if __name__ == '__main__':
     from db import db
