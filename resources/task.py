@@ -6,10 +6,26 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 class Task(Resource):
     parser = reqparse.RequestParser()
+    parser.add_argument('name',
+        type=str,
+        required=False
+    )
     parser.add_argument('id',
         type=int,
         required=True,
         help="Id cannot be blank."
+    )
+    parser.add_argument('description',
+        type=str,
+        required=False
+    )
+    parser.add_argument('deadline',
+        type=str,
+        required=False
+    )
+    parser.add_argument('priority',
+        type=str,
+        required=False
     )
 
     # @jwt_required()

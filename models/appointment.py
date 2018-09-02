@@ -23,7 +23,7 @@ class AppointmentModel(db.Model):
     def json(self):
         return {'id': self.id, 'name': self.name, 'description': self.description,
             'start': self.start.strftime('%m-%d-%Y %H:%S'),
-            'end': self.start.strftime('%m-%d-%Y %H:%S')}
+            'end': self.end.strftime('%m-%d-%Y %H:%S')}
     
     @classmethod
     def find_by_user_id(cls, user_id):
@@ -38,5 +38,11 @@ class AppointmentModel(db.Model):
         db.session.commit()
 
     def delete_from_db(self):
-        db.session.add(self)
+        db.session.delete(self)
         db.session.commit()
+    
+    def update(self, name, description, start, end):
+        self.name = name
+        self.description = description
+        self.start = datetime.strptime(start, '%m-%d-%Y %H:%S')
+        self.end = datetime.strptime(end, '%m-%d-%Y %H:%S')
