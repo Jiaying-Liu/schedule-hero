@@ -6,30 +6,10 @@ logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 class Task(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('name',
-        type=str,
-        required=True,
-        help="Name cannot be blank."
-    )
     parser.add_argument('id',
         type=int,
         required=True,
         help="Id cannot be blank."
-    )
-    parser.add_argument('description',
-        type=str,
-        required=True,
-        help="Must have description arg."
-    )
-    parser.add_argument('deadline',
-        type=str,
-        required=True,
-        help="deadline cannot be blank."
-    )
-    parser.add_argument('priority',
-        type=str,
-        required=True,
-        help="Priority cannot be blank."
     )
 
     # @jwt_required()
@@ -43,6 +23,10 @@ class Task(Resource):
     @jwt_required()
     def post(self):
         data = Task.parser.parse_args()
+
+        if 'name' not in data or 'description' not in data or 'deadline' not in data or 'priority' not in data:
+            return {'message': 'invalid json sent in body'}, 400
+
         task = TaskModel(data['name'], data['description'], data['deadline'],
             data['priority'], current_identity.first().id)
         try:
@@ -53,9 +37,11 @@ class Task(Resource):
 
     @jwt_required()
     def put(self):
-        logging.debug("in put")
         data = Task.parser.parse_args()
         task = TaskModel.find_by_task_id_and_user_id(data['id'], current_identity.first().id).first()
+
+        if 'name' not in data or 'description' not in data or 'deadline' not in data or 'priority' not in data:
+            return {'message': 'invalid json sent in body'}, 400
 
         if task is None:
             task = TaskModel(data['name'], data['description'], data['deadline'],
@@ -67,8 +53,15 @@ class Task(Resource):
         except:
             return {'message': 'error occurred while saving task'}, 500
         return task.json()
+    
+    @jwt_required()
+    def delete(self):
+        data = Task.parser.parse_args()
+        task = TaskModel.find_by_task_id_and_user_id(data['id'], current_identity.first().id).first()
+        if task is not None:
+            task.delete_from_db()
 
-            
+        return {'message': 'task is deleted'}
 
 
 class TaskList(Resource):
