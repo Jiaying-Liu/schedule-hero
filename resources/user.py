@@ -1,4 +1,5 @@
 from flask_restful import Resource, reqparse
+from flask_jwt import jwt_required, current_identity
 from models.user import UserModel
 import logging, sys
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -30,3 +31,18 @@ class UserRegister(Resource):
         else:
             ##logging.debug(user.name)
             return {"message": "A user with that username already exists!"}, 400
+
+
+class CurrentUser(Resource):
+    @jwt_required()
+    def get(self):
+        user = current_identity.first()
+        if user is None:
+            return {'user': None}
+
+        return {
+            'user': {
+                'name': user.name,
+                'username': user.username
+            } 
+        }

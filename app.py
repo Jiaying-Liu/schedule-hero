@@ -5,7 +5,7 @@ from flask_restful import Api
 from flask_jwt import JWT
 
 from security import authenticate, identity
-from resources.user import UserRegister
+from resources.user import UserRegister, CurrentUser
 from resources.task import Task, TaskList
 from resources.appointment import Appointment, AppointmentList
 
@@ -27,6 +27,7 @@ api.add_resource(Task, '/api/task')
 api.add_resource(TaskList, '/api/tasks')
 api.add_resource(Appointment, '/api/appointment')
 api.add_resource(AppointmentList, '/api/appointments')
+api.add_resource(CurrentUser, '/api/current_user')
 
 if __name__ == '__main__':
     from db import db
