@@ -4,20 +4,52 @@ import {
     Form
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux';
+import { login } from '../actions/index';
 
 class Landing extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            username: '',
+            password: ''
+        }
+    }
+
+    onLoginClick() {
+        this.props.login(this.state.username, this.state.password);
+    }
+
     renderLoginForm() {
         return (
             <Form>
                 <Form.Field>
                     <label>Username</label>
-                    <input name='username' placeholder="Username" />
+                    <input 
+                        name='username' 
+                        placeholder="Username"
+                        value={this.state.username}
+                        onChange={(event) => {
+                            this.setState({
+                                username: event.target.value
+                            })
+                        }} />
                 </Form.Field>
                 <Form.Field>
                     <label>Password</label>
-                    <input type='password' name='password' placeholder="Password" />
+                    <input 
+                        type='password' 
+                        name='password' 
+                        placeholder="Password"
+                        value={this.state.password}
+                        onChange={(event) => {
+                            this.setState({
+                                password: event.target.value
+                            })
+                        }} />
                 </Form.Field>
-                <Button type="submit">Login</Button>
+                <Button onClick={this.onLoginClick.bind(this)} type="submit">Login</Button>
             </Form>
         );
     }
@@ -36,4 +68,14 @@ class Landing extends Component {
     }
 }
 
-export default Landing;
+function mapStateToProps({ session }) {
+    return { session };
+}
+
+function mapDispatchToProps(dispatch) {
+    return bindActionCreators({
+        login: login
+    }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Landing);
