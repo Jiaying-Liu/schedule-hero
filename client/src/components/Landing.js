@@ -4,7 +4,7 @@ import {
     Form
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { login } from '../actions/index';
 

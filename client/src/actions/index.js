@@ -11,6 +11,12 @@ export const login = (username, password) => async dispatch => {
     dispatch({ type: LOGIN, payload: res.data });
 } 
 
+export const register = (name, username, password) => async dispatch => {
+    const res = await axios.post('/api/register', {name, username, password});
+
+    dispatch({ type: LOGIN, payload: res.data });
+}
+
 // user actions
 export const fetchUser = () => async (dispatch, getState) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + getState().session;
