@@ -9,7 +9,7 @@ from resources.user import UserRegister, CurrentUser
 from resources.task import Task, TaskList
 from resources.appointment import Appointment, AppointmentList
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/client/build')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = 'secret'
@@ -28,6 +28,12 @@ api.add_resource(TaskList, '/api/tasks')
 api.add_resource(Appointment, '/api/appointment')
 api.add_resource(AppointmentList, '/api/appointments')
 api.add_resource(CurrentUser, '/api/current_user')
+
+if os.environ.get('IS_HEROKU') is not None:
+    @app.route('/')
+    def root():
+        return app.send_static_file('index.html')
+
 
 if __name__ == '__main__':
     from db import db
