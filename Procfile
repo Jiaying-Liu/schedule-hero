@@ -1,1 +1,1 @@
-web: uwsgi uwsgi.ini && cd client && npm run start
+web: uwsgi uwsgi.ini
