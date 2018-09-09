@@ -19,7 +19,7 @@ export const register = (name, username, password) => async dispatch => {
 
 // user actions
 export const fetchUser = () => async (dispatch, getState) => {
-    axios.defaults.headers.common['Authorization'] = 'JWT ' + getState().session;
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
     const res = await axios.get('/api/current_user');
 
     dispatch({ type: FETCH_USER, payload: res.data });

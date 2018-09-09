@@ -6,7 +6,8 @@ import {
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { login } from '../actions/index';
+import { login, fetchUser } from '../actions/index';
+import Dashboard from './Dashboard';
 
 class Landing extends Component {
     constructor(props) {
@@ -17,8 +18,17 @@ class Landing extends Component {
         }
     }
 
-    onLoginClick() {
-        this.props.login(this.state.username, this.state.password);
+    componentDidMount() {
+        // get the user.
+        this.props.fetchUser();
+    }
+
+    async onLoginClick() {
+        await this.props.login(this.state.username, this.state.password);
+        if(this.props.session.access_token) {
+            sessionStorage.access_token = this.props.session.access_token;
+            this.props.fetchUser();
+        }
     }
 
     renderLoginForm() {
@@ -55,7 +65,7 @@ class Landing extends Component {
     }
 
     render() {
-        return (
+        var res = (
             <div>
                 <div style={{textAlign: 'center'}}>
                     <h1>Schedule Hero</h1>
@@ -65,16 +75,23 @@ class Landing extends Component {
                 <div>Don't have an account? <Link to='/register'>Sign up!</Link></div>
             </div>
         )
+
+        if(this.props.auth && this.props.auth.user) {
+            res = <Dashboard />;
+        }
+
+        return res;
     }
 }
 
-function mapStateToProps({ session }) {
-    return { session };
+function mapStateToProps({ auth, session }) {
+    return { auth, session };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        login: login
+        login: login,
+        fetchUser: fetchUser
     }, dispatch);
 }
 
