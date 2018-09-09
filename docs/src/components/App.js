@@ -6,6 +6,8 @@ import AppHeader from './AppHeader';
 
 import './App.css';
 
+var baseUrl = '/schedule-hero';
+
 class App extends Component {
   render() {
     return (
@@ -14,8 +16,8 @@ class App extends Component {
           <div>
             <AppHeader />
             <div className="container">
-              <Route exact path='/' component={Landing} />
-              <Route exact path='/register' component={Register} />
+              <Route exact path={baseUrl} component={Landing} />
+              <Route exact path={baseUrl + '/register'} component={Register} />
             </div>
           </div>
         </BrowserRouter>
