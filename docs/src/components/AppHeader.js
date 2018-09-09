@@ -8,7 +8,7 @@ class AppHeader extends Component {
     render() {
         return (
             <Header as='h3' block>
-                <Link to='/'>Schedule Hero</Link>
+                <Link to='/schedule-hero'>Schedule Hero</Link>
             </Header>
         )
     }

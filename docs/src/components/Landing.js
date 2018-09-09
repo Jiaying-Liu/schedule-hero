@@ -72,7 +72,7 @@ class Landing extends Component {
                     <div>Here to save the date!</div>
                 </div>
                 {this.renderLoginForm()}
-                <div>Don't have an account? <Link to='/register'>Sign up!</Link></div>
+                <div>Don't have an account? <Link to='/schedule-hero/register'>Sign up!</Link></div>
             </div>
         )
 

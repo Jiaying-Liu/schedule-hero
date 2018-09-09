@@ -6,7 +6,7 @@ import AppHeader from './AppHeader';
 
 import './App.css';
 
-var baseUrl = '/schedule-hero';
+const baseUrl = '/schedule-hero';
 
 class App extends Component {
   render() {
@@ -24,6 +24,6 @@ class App extends Component {
       </div>
     );
   }
-}
+} 
 
 export default App;

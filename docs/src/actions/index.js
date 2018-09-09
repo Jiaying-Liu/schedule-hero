@@ -6,7 +6,10 @@ import {
 
 var defaultAxios = axios;
 
-if(process.env.REACT_APP_API_URL) {
+console.log('react app url is ', process.env);
+
+if(process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
+    console.log('here');
     defaultAxios = axios.create({
         baseURL: process.env.REACT_APP_API_URL
     });  
