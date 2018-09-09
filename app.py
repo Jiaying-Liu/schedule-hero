@@ -3,6 +3,7 @@ import os
 from flask import Flask
 from flask_restful import Api
 from flask_jwt import JWT
+from flask_cors import CORS, cross_origin
 
 from security import authenticate, identity
 from resources.user import UserRegister, CurrentUser
@@ -12,6 +13,10 @@ from resources.appointment import Appointment, AppointmentList
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+cors = CORS(app, resources={r"/*": {"origins": "https://jiaying-liu.github.io"}})
+
 app.secret_key = 'secret'
 api = Api(app)
 
