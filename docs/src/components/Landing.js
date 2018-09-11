@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { login, fetchUser } from '../actions/index';
-import Dashboard from './Dashboard';
+import { baseURL } from '../helpers/baseURL';
 
 class Landing extends Component {
     constructor(props) {
@@ -24,7 +24,7 @@ class Landing extends Component {
     }
 
     async onLoginClick() {
-        await this.props.login(this.state.username, this.state.password);
+        await this.props.login(this.state.username.trim(), this.state.password);
         if(this.props.session.access_token) {
             sessionStorage.access_token = this.props.session.access_token;
             this.props.fetchUser();
@@ -72,12 +72,13 @@ class Landing extends Component {
                     <div>Here to save the date!</div>
                 </div>
                 {this.renderLoginForm()}
-                <div>Don't have an account? <Link to='/schedule-hero/register'>Sign up!</Link></div>
+                <div>Don't have an account? <Link to={baseURL + '/register'}>Sign up!</Link></div>
             </div>
         )
 
         if(this.props.auth && this.props.auth.user) {
-            res = <Dashboard />;
+            this.props.history.push(baseURL + '/dashboard')
+            this.props.history.goForward();
         }
 
         return res;

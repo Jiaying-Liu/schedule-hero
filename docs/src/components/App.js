@@ -3,10 +3,10 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import Landing from './Landing';
 import Register from './Register';
 import AppHeader from './AppHeader';
+import { baseURL } from '../helpers/baseURL';
 
 import './App.css';
-
-const baseUrl = '/schedule-hero';
+import Dashboard from './Dashboard';
 
 class App extends Component {
   render() {
@@ -16,8 +16,9 @@ class App extends Component {
           <div>
             <AppHeader />
             <div className="container">
-              <Route exact path={baseUrl} component={Landing} />
-              <Route exact path={baseUrl + '/register'} component={Register} />
+              <Route exact path={baseURL} component={Landing} />
+              <Route exact path={baseURL + '/register'} component={Register} />
+              <Route exact path={baseURL + '/dashboard'} component={Dashboard} />
             </div>
           </div>
         </BrowserRouter>

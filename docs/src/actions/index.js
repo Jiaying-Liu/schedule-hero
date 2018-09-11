@@ -1,7 +1,8 @@
 import axios from 'axios';
 import { 
     FETCH_USER,
-    LOGIN
+    LOGIN,
+    FETCH_TASKS
 } from './types';
 
 var baseURL = '';
@@ -30,4 +31,12 @@ export const fetchUser = () => async (dispatch, getState) => {
     const res = await axios.get(baseURL + '/api/current_user');
 
     dispatch({ type: FETCH_USER, payload: res.data });
+}
+
+// task actions
+export const fetchTasks = () => async (dispatch, getState) => {
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
+    const res = await axios.get(baseURL + '/api/tasks');
+
+    dispatch({ type: FETCH_TASKS, payload: res.data });
 }
