@@ -58,12 +58,28 @@ class Dashboard extends Component {
         )
     }
 
+    isDueWithinWeek(dueDate, today) {
+        var oneDay = 24*60*60*1000;
+        var diff = (dueDate.getTime() - today.getTime()) / oneDay;
+        
+        return diff >= 0 && diff < 7 
+    } 
+
+    getTasksThisWeek() {
+        var today = new Date();
+        return this.props.tasks.tasks.filter(task => {
+            let dueDate = new Date(task.deadline.split(' ')[0]);
+
+            return this.isDueWithinWeek(dueDate, today);
+        });
+    }
+
     taskTableBodyRender() {
         if(!this.props.tasks || !this.props.tasks.tasks) {
             return null;
         }
 
-        var rows = this.props.tasks.tasks.map(task => {
+        var rows = this.getTasksThisWeek().map(task => {
             return (
                 <Table.Row key={task.id}>
                     <Table.Cell>
@@ -96,7 +112,7 @@ class Dashboard extends Component {
                 allDay: false,
                 startDate: new Date(task.deadline),
                 endDate: new Date(task.deadline),
-                title: task.name
+                title: 'TASK: ' + task.name
             }
         });
     }
