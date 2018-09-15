@@ -26,7 +26,7 @@ export const register = (name, username, password) => async dispatch => {
 }
 
 // user actions
-export const fetchUser = () => async (dispatch, getState) => {
+export const fetchUser = () => async (dispatch) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
     const res = await axios.get(baseURL + '/api/current_user');
 
@@ -34,9 +34,17 @@ export const fetchUser = () => async (dispatch, getState) => {
 }
 
 // task actions
-export const fetchTasks = () => async (dispatch, getState) => {
+export const fetchTasks = () => async (dispatch) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
     const res = await axios.get(baseURL + '/api/tasks');
 
     dispatch({ type: FETCH_TASKS, payload: res.data });
+}
+
+export const addTask = (name, description, deadline) => async () => {
+    var body = {name, description, deadline};
+    body.id = 0;
+    body.priority = 'low';
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
+    return await axios.post(baseURL + '/api/task', body);
 }

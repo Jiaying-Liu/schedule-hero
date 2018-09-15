@@ -2,9 +2,11 @@ import React, { Component } from 'react';
 import {
     Container,
     Grid,
-    Table
+    Table,
+    Button
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { fetchUser, fetchTasks } from '../actions/index';
 import BigCalendar from 'react-big-calendar';
@@ -62,10 +64,10 @@ class Dashboard extends Component {
         var oneDay = 24*60*60*1000;
         var diff = (dueDate.getTime() - today.getTime()) / oneDay;
         
-        return diff >= 0 && diff < 7 
+        return diff > -1 && diff < 7 
     } 
 
-    getTasksThisWeek() {
+    getTasksDueInWeek() {
         var today = new Date();
         return this.props.tasks.tasks.filter(task => {
             let dueDate = new Date(task.deadline.split(' ')[0]);
@@ -79,7 +81,7 @@ class Dashboard extends Component {
             return null;
         }
 
-        var rows = this.getTasksThisWeek().map(task => {
+        var rows = this.getTasksDueInWeek().map(task => {
             return (
                 <Table.Row key={task.id}>
                     <Table.Cell>
@@ -100,6 +102,18 @@ class Dashboard extends Component {
                 {rows}
             </Table.Body>
         )
+    }
+
+    taskButtonRender() {
+        return (
+            <div>
+                <Link to={baseURL + '/add-task'}>
+                <Button>
+                    Add Task
+                </Button>
+                </Link>
+            </div>
+        );
     }
 
     createEvents() {
@@ -137,11 +151,12 @@ class Dashboard extends Component {
                         </div>
                     </Grid.Column>
                     <Grid.Column key={1} width={4}>
-                        <h3>Tasks Due This Week</h3>
+                        <h3>Tasks Due Within a Week</h3>
                         <Table celled>
                             {this.taskTableHeaderRender()}
                             {this.taskTableBodyRender()}
                         </Table>
+                        {this.taskButtonRender()}
                     </Grid.Column>
                 </Grid>
             </div>

@@ -3,9 +3,11 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import Landing from './Landing';
 import Register from './Register';
 import AppHeader from './AppHeader';
+import AddTaskPage from './AddTaskPage';
 import { baseURL } from '../helpers/baseURL';
 
 import './App.css';
+import 'react-datepicker/dist/react-datepicker.css';
 import Dashboard from './Dashboard';
 
 class App extends Component {
@@ -19,6 +21,7 @@ class App extends Component {
               <Route exact path={baseURL} component={Landing} />
               <Route exact path={baseURL + '/register'} component={Register} />
               <Route exact path={baseURL + '/dashboard'} component={Dashboard} />
+              <Route exact path={baseURL + '/add-task'} component={AddTaskPage} />
             </div>
           </div>
         </BrowserRouter>
