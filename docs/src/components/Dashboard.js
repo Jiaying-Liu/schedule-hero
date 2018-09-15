@@ -53,7 +53,7 @@ class Dashboard extends Component {
                         Description
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                        Due Date
+                        Deadline
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
@@ -63,7 +63,7 @@ class Dashboard extends Component {
     isDueWithinWeek(dueDate, today) {
         var oneDay = 24*60*60*1000;
         var diff = (dueDate.getTime() - today.getTime()) / oneDay;
-        
+
         return diff > -1 && diff < 7 
     } 
 
@@ -81,7 +81,14 @@ class Dashboard extends Component {
             return null;
         }
 
-        var rows = this.getTasksDueInWeek().map(task => {
+        var tasksDueInWeek = this.getTasksDueInWeek().sort((task1, task2) => {
+            let deadline1 = new Date(task1.deadline.split(' ')[0]);
+            let deadline2 = new Date(task2.deadline.split(' ')[0]);
+
+            return deadline1.getTime() - deadline2.getTime();
+        });
+
+        var rows = tasksDueInWeek.map(task => {
             return (
                 <Table.Row key={task.id}>
                     <Table.Cell>
