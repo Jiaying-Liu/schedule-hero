@@ -7,23 +7,23 @@ import {
 import DatePicker from 'react-datepicker';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchUser, addTask } from '../actions/index';
+import { fetchUser, addAppointment } from '../actions/index';
 import { baseURL } from '../helpers/baseURL';
 import moment from 'moment';
 
-import './AddTaskPage.css';
+import './AddAppointPage.css';
 
-class AddTaskPage extends Component {
+class AddAppointPage extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             name: '',
             description: '',
-            dueDate: moment(),
-            dueTime: '00:00',
-            openDate: false,
-            openTime: false
+            startDate: moment(),
+            startTime: '00:00',
+            endDate: moment(),
+            endTime: '00:00'
         }
     }
 
@@ -43,14 +43,15 @@ class AddTaskPage extends Component {
         }
     }
 
-    async onAddTaskClick() {
-        let deadline = this.state.dueDate.format('MM-DD-YYYY') + ' ' + this.state.dueTime;
-        await this.props.addTask(this.state.name.trim(), this.state.description, deadline);
+    async onAddAppointClick() {
+        let start = this.state.startDate.format('MM-DD-YYYY') + ' ' + this.state.startTime;
+        let end = this.state.endDate.format('MM-DD-YYYY') + ' ' + this.state.endTime;
+        await this.props.addAppointment(this.state.name.trim(), this.state.description, start, end);
         this.props.history.push(baseURL + '/dashboard');
         this.props.history.goForward();
     }
 
-    addTaskFormRender() {
+    addAppointFormRender() {
         return (
             <Form>
                 <Form.Field>
@@ -74,32 +75,57 @@ class AddTaskPage extends Component {
                     }} />
                 </Form.Field>
                 <Form.Field>
-                    <label>Due Date</label>
+                    <label>Start Date</label>
                     <DatePicker
-                        selected={this.state.dueDate}
+                        selected={this.state.startDate}
                         onChange={date => {
-                            this.setState({dueDate: date})
+                            this.setState({startDate: date})
                         }}
                     />
                     
                 </Form.Field>               
                 <Form.Field>
-                    <label>Due Time</label>
+                    <label>Start Time</label>
                     <DatePicker
                         showTimeSelect
                         showTimeSelectOnly
                         timeIntervals={15}
                         timeFormat="HH:mm"
                         timeCaption="time"
-                        value={this.state.dueTime}
+                        value={this.state.startTime}
                         onChange={time => {
                             this.setState({
-                                dueTime: time.format("HH:mm")
+                                startTime: time.format("HH:mm")
                             });
                         }} />
                 </Form.Field>
-                <Button onClick={this.onAddTaskClick.bind(this)}>
-                    Add Task
+                <Form.Field>
+                    <label>End Date</label>
+                    <DatePicker
+                        selected={this.state.endDate}
+                        onChange={date => {
+                            this.setState({endDate: date})
+                        }}
+                    />
+                    
+                </Form.Field>               
+                <Form.Field>
+                    <label>End Time</label>
+                    <DatePicker
+                        showTimeSelect
+                        showTimeSelectOnly
+                        timeIntervals={15}
+                        timeFormat="HH:mm"
+                        timeCaption="time"
+                        value={this.state.endTime}
+                        onChange={time => {
+                            this.setState({
+                                endTime: time.format("HH:mm")
+                            });
+                        }} />
+                </Form.Field>
+                <Button onClick={this.onAddAppointClick.bind(this)}>
+                    Add Appointment
                 </Button>
             </Form>
         )
@@ -107,9 +133,9 @@ class AddTaskPage extends Component {
 
     render() {
         return (
-            <Container className="add-task">
-                <h3>Add Task</h3>
-                {this.addTaskFormRender()}
+            <Container className="add-appoint">
+                <h3>Add Appointment</h3>
+                {this.addAppointFormRender()}
             </Container>
         )
     }
@@ -121,9 +147,9 @@ function mapStateToProps({ auth }) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        addTask: addTask,
+        addAppointment: addAppointment,
         fetchUser: fetchUser
     }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddTaskPage);
+export default connect(mapStateToProps, mapDispatchToProps)(AddAppointPage);

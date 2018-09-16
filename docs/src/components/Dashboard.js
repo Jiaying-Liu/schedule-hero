@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {
-    Container,
     Grid,
     Table,
     Button
@@ -8,7 +7,11 @@ import {
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
-import { fetchUser, fetchTasks } from '../actions/index';
+import { 
+    fetchUser, 
+    fetchTasks,
+    fetchAppointments
+} from '../actions/index';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { baseURL } from '../helpers/baseURL';
@@ -27,6 +30,7 @@ class Dashboard extends Component {
         await this.props.fetchUser();
             if(this.props.auth && this.props.auth.user) {
                 this.props.fetchTasks();
+                this.props.fetchAppointments();
             } else {
                 this.props.history.push(baseURL);
                 this.props.history.goForward();
@@ -40,7 +44,7 @@ class Dashboard extends Component {
         }
     }
 
-
+    // render task components
 
     taskTableHeaderRender() {
         return (
@@ -98,7 +102,7 @@ class Dashboard extends Component {
                         {task.description}
                     </Table.Cell>
                     <Table.Cell>
-                        {task.deadline}
+                        {moment(task.deadline).format('MMM DD, YYYY HH:mm')}
                     </Table.Cell>
                 </Table.Row>
             );
@@ -123,12 +127,94 @@ class Dashboard extends Component {
         );
     }
 
+    // render appointment components
+    appointTableHeaderRender() {
+        return (
+            <Table.Header>
+                <Table.Row>
+                    <Table.HeaderCell>
+                        Name
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        Description
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        Starts
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        Ends
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Header>
+        )
+    }
+
+    getAppointsDueInWeek() {
+        var today = new Date();
+        return this.props.appointments.appointments.filter(appoint => {
+            let startDate = new Date(appoint.start.split(' ')[0]);
+
+            return this.isDueWithinWeek(startDate, today);
+        });
+    }
+
+    appointTableBodyRender() {
+        if(!this.props.appointments || !this.props.appointments.appointments) {
+            return null;
+        }
+
+        var appointsDueInWeek = this.getAppointsDueInWeek().sort((appoint1, appoint2) => {
+            let deadline1 = new Date(appoint1.start.split(' ')[0]);
+            let deadline2 = new Date(appoint2.start.split(' ')[0]);
+
+            return deadline1.getTime() - deadline2.getTime();
+        });
+
+        var rows = appointsDueInWeek.map(appoint => {
+            return (
+                <Table.Row key={appoint.id}>
+                    <Table.Cell>
+                        {appoint.name}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {appoint.description}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {moment(appoint.start).format('MMM DD, YYYY HH:mm')}
+                    </Table.Cell>
+                    <Table.Cell>
+                        {moment(appoint.end).format('MMM DD, YYYY HH:mm')}
+                    </Table.Cell>
+                </Table.Row>
+            );
+        });
+
+        return (
+            <Table.Body>
+                {rows}
+            </Table.Body>
+        )
+    }
+
+    appointButtonRender() {
+        return (
+            <div>
+                <Link to={baseURL + '/add-appointment'}>
+                <Button>
+                    Add Appointment
+                </Button>
+                </Link>
+            </div>
+        );
+    }
+
+
     createEvents() {
-        if(!this.props.tasks || !this.props.tasks.tasks) {
+        if(!this.props.tasks || !this.props.tasks.tasks || !this.props.appointments || !this.props.appointments.appointments) {
             return [];
         }
 
-        return this.props.tasks.tasks.map(task => {
+        var events = this.props.tasks.tasks.map(task => {
             return {
                 allDay: false,
                 startDate: new Date(task.deadline),
@@ -136,10 +222,20 @@ class Dashboard extends Component {
                 title: 'TASK: ' + task.name
             }
         });
+
+        this.props.appointments.appointments.forEach(appoint => {
+            events.push({
+                allDay: false,
+                startDate: new Date(appoint.start),
+                endDate: new Date(appoint.end),
+                title: 'APPOINTMENT ' + appoint.name
+            });
+        });
+
+        return events;
     }
 
     render() {
-        console.log('tasks are ', this.props.tasks);
         if(!this.props.auth || !this.props.auth.user) {
             
             return <div>Session Timed Out</div>
@@ -165,20 +261,29 @@ class Dashboard extends Component {
                         </Table>
                         {this.taskButtonRender()}
                     </Grid.Column>
+                    <Grid.Column key={2} width={4}>
+                        <h3>Appointments Within a Week</h3>
+                        <Table celled>
+                            {this.appointTableHeaderRender()}
+                            {this.appointTableBodyRender()}
+                        </Table>
+                        {this.appointButtonRender()}
+                    </Grid.Column>
                 </Grid>
             </div>
         )
     }
 }
 
-function mapStateToProps({ auth, tasks }) {
-    return { auth, tasks };
+function mapStateToProps({ auth, tasks, appointments }) {
+    return { auth, tasks, appointments };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         fetchTasks: fetchTasks,
-        fetchUser: fetchUser
+        fetchUser: fetchUser,
+        fetchAppointments: fetchAppointments
     }, dispatch);
 }
 
