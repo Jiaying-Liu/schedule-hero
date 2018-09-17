@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {
+    Container,
     Button,
     Form
 } from 'semantic-ui-react';
@@ -88,13 +89,13 @@ class Register extends Component {
 
     render() {
         return(
-        <div>
+        <Container>
             <div style={{textAlign: 'center'}}>
                 <h1>Schedule Hero</h1>
                 <div>Register</div>
             </div>
             {this.renderRegisterForm()}
-        </div>
+        </Container>
         );
     }
 }
