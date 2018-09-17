@@ -8,23 +8,23 @@ class TaskModel(db.Model):
     name = db.Column(db.String(80))
     description = db.Column(db.String(255))
     deadline = db.Column(db.DateTime)
-    priority = db.Column(db.String(10), db.CheckConstraint("priority = 'low' or priority = 'medium' or priority = 'high'"))
+    done = db.Column(db.Boolean, default=False, nullable=False)
 
     ## foreign key
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship('UserModel')
 
-    def __init__(self, name, description, deadline, priority, user_id):
+    def __init__(self, name, description, deadline, user_id):
         self.name = name
         self.description = description
         ## will need to do datetime string conversion
         self.deadline = datetime.strptime(deadline, '%m-%d-%Y %H:%S')
-        self.priority = priority
         self.user_id = user_id
+        self.done = False
 
     def json(self):
         return {'id': self.id, 'name': self.name, 'description': self.description,
-            'deadline': self.deadline.strftime('%m-%d-%Y %H:%S'), 'priority': self.priority }
+            'deadline': self.deadline.strftime('%m-%d-%Y %H:%S'), 'done': self.done }
 
     @classmethod
     def find_by_id(cls, _id):
@@ -50,8 +50,8 @@ class TaskModel(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    def update(self, name, description, deadline, priority):
+    def update(self, name, description, deadline, done):
         self.name = name
         self.description = description
         self.deadline = datetime.strptime(deadline, '%m-%d-%Y %H:%S')
-        self.priority = priority
+        self.done = done

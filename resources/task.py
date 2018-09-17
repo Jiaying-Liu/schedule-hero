@@ -23,8 +23,8 @@ class Task(Resource):
         type=str,
         required=False
     )
-    parser.add_argument('priority',
-        type=str,
+    parser.add_argument('done',
+        type=bool,
         required=False
     )
 
@@ -40,11 +40,10 @@ class Task(Resource):
     def post(self):
         data = Task.parser.parse_args()
 
-        if 'name' not in data or 'description' not in data or 'deadline' not in data or 'priority' not in data:
+        if 'name' not in data or 'description' not in data or 'deadline' not in data:
             return {'message': 'invalid json sent in body'}, 400
 
-        task = TaskModel(data['name'], data['description'], data['deadline'],
-            data['priority'], current_identity.first().id)
+        task = TaskModel(data['name'], data['description'], data['deadline'], current_identity.first().id)
         try:
             task.save_to_db()
         except:
@@ -56,14 +55,14 @@ class Task(Resource):
         data = Task.parser.parse_args()
         task = TaskModel.find_by_task_id_and_user_id(data['id'], current_identity.first().id).first()
 
-        if 'name' not in data or 'description' not in data or 'deadline' not in data or 'priority' not in data:
+        if 'name' not in data or 'description' not in data or 'deadline' not in data or 'done' not in data:
             return {'message': 'invalid json sent in body'}, 400
 
         if task is None:
-            task = TaskModel(data['name'], data['description'], data['deadline'],
-                data['priority'], current_identity.first().id)
+            task = TaskModel(data['name'], data['description'], data['deadline'], current_identity.first().id)
+            task.done = data['done']
         else:
-            task.update(data['name'], data['description'], data['deadline'], data['priority'])
+            task.update(data['name'], data['description'], data['deadline'], data['done'])
         try:
             task.save_to_db()
         except:
