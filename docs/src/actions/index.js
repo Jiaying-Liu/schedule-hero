@@ -44,14 +44,12 @@ export const fetchTasks = () => async (dispatch) => {
 export const addTask = (name, description, deadline) => async () => {
     var body = {name, description, deadline};
     body.id = 0;
-    body.priority = 'low';
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
     return await axios.post(baseURL + '/api/task', body);
 }
 
 export const deleteTask = id => async (dispatch) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
-    console.log('id is ', id);
     return await axios.delete(baseURL + '/api/task', {data: { id }});
 }
 
