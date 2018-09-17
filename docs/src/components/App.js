@@ -9,6 +9,7 @@ import { baseURL } from '../helpers/baseURL';
 
 import './App.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'font-awesome/css/font-awesome.min.css';
 import Dashboard from './Dashboard';
 
 class App extends Component {

@@ -1,9 +1,7 @@
 .schedule-hero-dashboard {
-    overflow-x: scroll;
-    overflow-y: hidden;
-    margin: 25px 25px 25px;
+    margin: 24px 16px 24px;
 }
 
 .schedule-hero-calendar .rbc-month-row {
-    flex-basis: 100px;
+    flex-basis: 80px;
 }

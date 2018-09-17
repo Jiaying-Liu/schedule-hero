@@ -49,6 +49,12 @@ export const addTask = (name, description, deadline) => async () => {
     return await axios.post(baseURL + '/api/task', body);
 }
 
+export const deleteTask = id => async (dispatch) => {
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
+    console.log('id is ', id);
+    return await axios.delete(baseURL + '/api/task', {data: { id }});
+}
+
 // appointment actions
 export const fetchAppointments = () => async (dispatch) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
@@ -62,4 +68,9 @@ export const addAppointment = (name, description, start, end) => async () => {
     body.id = 0;
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
     return await axios.post(baseURL + '/api/appointment', body);
+}
+
+export const deleteAppointment = id => async (dispatch) => {
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
+    return await axios.delete(baseURL + '/api/appointment', {data: { id }});
 }

@@ -11,7 +11,9 @@ import { bindActionCreators } from 'redux';
 import { 
     fetchUser, 
     fetchTasks,
-    fetchAppointments
+    fetchAppointments,
+    deleteTask,
+    deleteAppointment
 } from '../actions/index';
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
@@ -58,9 +60,15 @@ class Dashboard extends Component {
 
         return (
             <TaskTable 
-                tasks={this.props.tasks.tasks}    
+                tasks={this.props.tasks.tasks} 
+                onDeleteTask={this.onDeleteTask.bind(this)}   
             />
         )
+    }
+
+    async onDeleteTask(id) {
+        await this.props.deleteTask(id);
+        this.props.fetchTasks();
     }
 
     taskButtonRender() {
@@ -81,8 +89,14 @@ class Dashboard extends Component {
 
         return (
             <AppointTable
-                appointments={this.props.appointments.appointments} />
+                appointments={this.props.appointments.appointments}
+                onDeleteAppoint={this.onDeleteAppoint.bind(this)} />
         )
+    }
+
+    async onDeleteAppoint(id) {
+        await this.props.deleteAppointment(id);
+        this.props.fetchAppointments();
     }
 
     appointButtonRender() {
@@ -134,20 +148,21 @@ class Dashboard extends Component {
             <div className='schedule-hero-dashboard'>
                 <h1 style={{'textAlign': 'center'}}>Welcome {this.props.auth.user.name}!</h1>
                 <Grid>
-                    <Grid.Column key={0} width={8}>
+                    <Grid.Column key={0} width={6}>
                         <div className='schedule-hero-calendar'>
                             <BigCalendar
                                 events={this.createEvents()}
                                 startAccessor='startDate'
-                                endAccessor='endDate' />
+                                endAccessor='endDate'
+                                views={['month', 'week', 'agenda']} />
                         </div>
                     </Grid.Column>
-                    <Grid.Column key={1} width={4}>
+                    <Grid.Column key={1} width={5}>
                         <h3>Tasks Due Within a Week</h3>
                         {this.taskTableRender()}
                         {this.taskButtonRender()}
                     </Grid.Column>
-                    <Grid.Column key={2} width={4}>
+                    <Grid.Column key={2} width={5}>
                         <h3>Appointments Within a Week</h3>
                         {this.appointTableRender()}
                         {this.appointButtonRender()}
@@ -166,7 +181,9 @@ function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         fetchTasks: fetchTasks,
         fetchUser: fetchUser,
-        fetchAppointments: fetchAppointments
+        fetchAppointments: fetchAppointments,
+        deleteTask: deleteTask,
+        deleteAppointment
     }, dispatch);
 }
 

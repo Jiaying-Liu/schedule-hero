@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "font-awesome": "^4.7.0",
     "moment": "^2.22.2",
     "rc-time-picker": "^3.4.0",
     "react": "^16.4.2",

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
-    Table
+    Table,
+    Checkbox
 } from 'semantic-ui-react';
 import moment from 'moment';
 
@@ -24,6 +25,9 @@ class TaskTable extends Component {
                     </Table.HeaderCell>
                     <Table.HeaderCell>
                         Deadline
+                    </Table.HeaderCell>
+                    <Table.HeaderCell>
+                        Done
                     </Table.HeaderCell>
                     <Table.HeaderCell>
                         Edit/Delete
@@ -61,6 +65,28 @@ class TaskTable extends Component {
                     </Table.Cell>
                     <Table.Cell>
                         {moment(task.deadline).format('MMM DD, YYYY HH:mm')}
+                    </Table.Cell>
+                    <Table.Cell>
+                        <Checkbox />
+                    </Table.Cell>
+                    <Table.Cell>
+                        <div 
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end'
+                            }}>
+                            <i
+                                style={{ paddingRight: '8px' }}
+                                title='Edit'
+                                className='fa fa-edit fa-lg' />
+                            <i 
+                                title='Delete'
+                                onClick={() => {
+                                    this.props.onDeleteTask(task.id);
+                                }}
+                                style={{ paddingRight: '8px' }}
+                                className='fa fa-trash fa-lg' />
+                        </div>
                     </Table.Cell>
                 </Table.Row>
             );
