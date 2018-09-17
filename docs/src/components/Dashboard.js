@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import {
     Grid,
-    Table,
     Button
 } from 'semantic-ui-react';
+import TaskTable from './TaskTable';
+import AppointTable from './AppointTable';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -37,6 +38,13 @@ class Dashboard extends Component {
             }
     }
 
+    isDueWithinWeek(dueDate, today) {
+        var oneDay = 24*60*60*1000;
+        var diff = (dueDate.getTime() - today.getTime()) / oneDay;
+
+        return diff > -1 && diff < 7 
+    }
+
     componentDidUpdate() {
         if(!this.props.auth || !this.props.auth.user) {
             this.props.history.push(baseURL);
@@ -45,73 +53,13 @@ class Dashboard extends Component {
     }
 
     // render task components
-
-    taskTableHeaderRender() {
-        return (
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell>
-                        Name
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                        Description
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                        Deadline
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-        )
-    }
-
-    isDueWithinWeek(dueDate, today) {
-        var oneDay = 24*60*60*1000;
-        var diff = (dueDate.getTime() - today.getTime()) / oneDay;
-
-        return diff > -1 && diff < 7 
-    } 
-
-    getTasksDueInWeek() {
-        var today = new Date();
-        return this.props.tasks.tasks.filter(task => {
-            let dueDate = new Date(task.deadline.split(' ')[0]);
-
-            return this.isDueWithinWeek(dueDate, today);
-        });
-    }
-
-    taskTableBodyRender() {
-        if(!this.props.tasks || !this.props.tasks.tasks) {
-            return null;
-        }
-
-        var tasksDueInWeek = this.getTasksDueInWeek().sort((task1, task2) => {
-            let deadline1 = new Date(task1.deadline.split(' ')[0]);
-            let deadline2 = new Date(task2.deadline.split(' ')[0]);
-
-            return deadline1.getTime() - deadline2.getTime();
-        });
-
-        var rows = tasksDueInWeek.map(task => {
-            return (
-                <Table.Row key={task.id}>
-                    <Table.Cell>
-                        {task.name}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {task.description}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {moment(task.deadline).format('MMM DD, YYYY HH:mm')}
-                    </Table.Cell>
-                </Table.Row>
-            );
-        });
+    taskTableRender() {
+        if(!this.props.tasks || !this.props.tasks.tasks) return null;
 
         return (
-            <Table.Body>
-                {rows}
-            </Table.Body>
+            <TaskTable 
+                tasks={this.props.tasks.tasks}    
+            />
         )
     }
 
@@ -128,71 +76,12 @@ class Dashboard extends Component {
     }
 
     // render appointment components
-    appointTableHeaderRender() {
-        return (
-            <Table.Header>
-                <Table.Row>
-                    <Table.HeaderCell>
-                        Name
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                        Description
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                        Starts
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>
-                        Ends
-                    </Table.HeaderCell>
-                </Table.Row>
-            </Table.Header>
-        )
-    }
-
-    getAppointsDueInWeek() {
-        var today = new Date();
-        return this.props.appointments.appointments.filter(appoint => {
-            let startDate = new Date(appoint.start.split(' ')[0]);
-
-            return this.isDueWithinWeek(startDate, today);
-        });
-    }
-
-    appointTableBodyRender() {
-        if(!this.props.appointments || !this.props.appointments.appointments) {
-            return null;
-        }
-
-        var appointsDueInWeek = this.getAppointsDueInWeek().sort((appoint1, appoint2) => {
-            let deadline1 = new Date(appoint1.start.split(' ')[0]);
-            let deadline2 = new Date(appoint2.start.split(' ')[0]);
-
-            return deadline1.getTime() - deadline2.getTime();
-        });
-
-        var rows = appointsDueInWeek.map(appoint => {
-            return (
-                <Table.Row key={appoint.id}>
-                    <Table.Cell>
-                        {appoint.name}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {appoint.description}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {moment(appoint.start).format('MMM DD, YYYY HH:mm')}
-                    </Table.Cell>
-                    <Table.Cell>
-                        {moment(appoint.end).format('MMM DD, YYYY HH:mm')}
-                    </Table.Cell>
-                </Table.Row>
-            );
-        });
+    appointTableRender() {
+        if(!this.props.appointments || !this.props.appointments.appointments) return null;
 
         return (
-            <Table.Body>
-                {rows}
-            </Table.Body>
+            <AppointTable
+                appointments={this.props.appointments.appointments} />
         )
     }
 
@@ -242,7 +131,7 @@ class Dashboard extends Component {
         }
 
         return (
-            <div>
+            <div className='schedule-hero-dashboard'>
                 <h1 style={{'textAlign': 'center'}}>Welcome {this.props.auth.user.name}!</h1>
                 <Grid>
                     <Grid.Column key={0} width={8}>
@@ -255,18 +144,12 @@ class Dashboard extends Component {
                     </Grid.Column>
                     <Grid.Column key={1} width={4}>
                         <h3>Tasks Due Within a Week</h3>
-                        <Table celled>
-                            {this.taskTableHeaderRender()}
-                            {this.taskTableBodyRender()}
-                        </Table>
+                        {this.taskTableRender()}
                         {this.taskButtonRender()}
                     </Grid.Column>
                     <Grid.Column key={2} width={4}>
                         <h3>Appointments Within a Week</h3>
-                        <Table celled>
-                            {this.appointTableHeaderRender()}
-                            {this.appointTableBodyRender()}
-                        </Table>
+                        {this.appointTableRender()}
                         {this.appointButtonRender()}
                     </Grid.Column>
                 </Grid>

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     Button,
-    Form
+    Form,
+    Container
 } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -19,8 +20,20 @@ class Landing extends Component {
     }
 
     componentDidMount() {
+        if(this.props.auth && this.props.auth.user) {
+            this.props.history.push(baseURL + '/dashboard')
+            this.props.history.goForward();
+        }
+
         // get the user.
         this.props.fetchUser();
+    }
+
+    componentDidUpdate() {
+        if(this.props.auth && this.props.auth.user) {
+            this.props.history.push(baseURL + '/dashboard')
+            this.props.history.goForward();
+        }
     }
 
     async onLoginClick() {
@@ -66,20 +79,15 @@ class Landing extends Component {
 
     render() {
         var res = (
-            <div>
+            <Container>
                 <div style={{textAlign: 'center'}}>
                     <h1>Schedule Hero</h1>
                     <div>Here to save the date!</div>
                 </div>
                 {this.renderLoginForm()}
                 <div>Don't have an account? <Link to={baseURL + '/register'}>Sign up!</Link></div>
-            </div>
+            </Container>
         )
-
-        if(this.props.auth && this.props.auth.user) {
-            this.props.history.push(baseURL + '/dashboard')
-            this.props.history.goForward();
-        }
 
         return res;
     }

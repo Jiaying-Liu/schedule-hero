@@ -18,7 +18,7 @@ class App extends Component {
         <BrowserRouter>
           <div>
             <AppHeader />
-            <div className="container">
+            <div>
               <Route exact path={baseURL} component={Landing} />
               <Route exact path={baseURL + '/register'} component={Register} />
               <Route exact path={baseURL + '/dashboard'} component={Dashboard} />
