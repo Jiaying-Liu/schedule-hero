@@ -18,6 +18,7 @@ import {
 import BigCalendar from 'react-big-calendar';
 import moment from 'moment';
 import { baseURL } from '../helpers/baseURL';
+import { isDueWithinWeek } from '../helpers/timeHelper';
 
 import './Dashboard.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -55,12 +56,21 @@ class Dashboard extends Component {
     }
 
     // render task components
+    getTasksDueInWeek() {
+        var today = new Date();
+        return this.props.tasks.tasks.filter(task => {
+            let dueDate = new Date(task.deadline.split(' ')[0]);
+
+            return isDueWithinWeek(dueDate, today);
+        });
+    }
+
     taskTableRender() {
         if(!this.props.tasks || !this.props.tasks.tasks) return null;
 
         return (
             <TaskTable 
-                tasks={this.props.tasks.tasks} 
+                tasks={this.getTasksDueInWeek()} 
                 onDeleteTask={this.onDeleteTask.bind(this)}   
             />
         )
@@ -89,12 +99,21 @@ class Dashboard extends Component {
     }
 
     // render appointment components
+    getAppointsDueInWeek() {
+        var today = new Date();
+        return this.props.appointments.appointments.filter(appoint => {
+            let dueDate = new Date(appoint.start.split(' ')[0]);
+
+            return isDueWithinWeek(dueDate, today);
+        });
+    }
+
     appointTableRender() {
         if(!this.props.appointments || !this.props.appointments.appointments) return null;
 
         return (
             <AppointTable
-                appointments={this.props.appointments.appointments}
+                appointments={this.getAppointsDueInWeek()}
                 onDeleteAppoint={this.onDeleteAppoint.bind(this)} />
         )
     }

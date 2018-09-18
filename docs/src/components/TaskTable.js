@@ -6,12 +6,6 @@ import {
 import moment from 'moment';
 
 class TaskTable extends Component {
-    isDueWithinWeek(dueDate, today) {
-        var oneDay = 24*60*60*1000;
-        var diff = (dueDate.getTime() - today.getTime()) / oneDay;
-
-        return diff > -1 && diff < 7 
-    }
 
     taskTableHeaderRender() {
         return (
@@ -37,24 +31,15 @@ class TaskTable extends Component {
         )
     }
 
-    getTasksDueInWeek() {
-        var today = new Date();
-        return this.props.tasks.filter(task => {
-            let dueDate = new Date(task.deadline.split(' ')[0]);
-
-            return this.isDueWithinWeek(dueDate, today);
-        });
-    }
-
     taskTableBodyRender() {
-        var tasksDueInWeek = this.getTasksDueInWeek().sort((task1, task2) => {
+        var tasks = this.props.tasks.sort((task1, task2) => {
             let deadline1 = new Date(task1.deadline.split(' ')[0]);
             let deadline2 = new Date(task2.deadline.split(' ')[0]);
 
             return deadline1.getTime() - deadline2.getTime();
         });
 
-        var rows = tasksDueInWeek.map(task => {
+        var rows = tasks.map(task => {
             return (
                 <Table.Row key={task.id}>
                     <Table.Cell>

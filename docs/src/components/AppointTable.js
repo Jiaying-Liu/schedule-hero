@@ -3,7 +3,6 @@ import {
     Table
 } from 'semantic-ui-react';
 import moment from 'moment';
-import { isDueWithinWeek } from '../helpers/timeHelper';
 
 class AppointTable extends Component {
     appointTableHeaderRender() {
@@ -30,24 +29,15 @@ class AppointTable extends Component {
         )
     }
 
-    getAppointsDueInWeek() {
-        var today = new Date();
-        return this.props.appointments.filter(appoint => {
-            let startDate = new Date(appoint.start.split(' ')[0]);
-
-            return isDueWithinWeek(startDate, today);
-        });
-    }
-
     appointTableBodyRender() {
-        var appointsDueInWeek = this.getAppointsDueInWeek().sort((appoint1, appoint2) => {
+        var appoints = this.props.appointments.sort((appoint1, appoint2) => {
             let deadline1 = new Date(appoint1.start.split(' ')[0]);
             let deadline2 = new Date(appoint2.start.split(' ')[0]);
 
             return deadline1.getTime() - deadline2.getTime();
         });
 
-        var rows = appointsDueInWeek.map(appoint => {
+        var rows = appoints.map(appoint => {
             return (
                 <Table.Row key={appoint.id}>
                     <Table.Cell>
