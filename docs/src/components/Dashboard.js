@@ -79,6 +79,11 @@ class Dashboard extends Component {
                     Add Task
                 </Button>
                 </Link>
+                <Link to={baseURL + '/all-tasks'}>
+                    <Button>
+                    View All Tasks
+                    </Button>
+                </Link>
             </div>
         );
     }
@@ -106,6 +111,11 @@ class Dashboard extends Component {
                 <Button>
                     Add Appointment
                 </Button>
+                </Link>
+                <Link to={baseURL + '/all-appointments'}>
+                    <Button>
+                        View All Appointments
+                    </Button>
                 </Link>
             </div>
         );

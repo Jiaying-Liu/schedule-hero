@@ -5,6 +5,8 @@ import Register from './Register';
 import AppHeader from './AppHeader';
 import AddTaskPage from './AddTaskPage';
 import AddAppointPage from './AddAppointPage';
+import AllTasksPage from './AllTasksPage';
+import AllAppointsPage from './AllAppointsPage';
 import { baseURL } from '../helpers/baseURL';
 
 import './App.css';
@@ -25,6 +27,8 @@ class App extends Component {
               <Route exact path={baseURL + '/dashboard'} component={Dashboard} />
               <Route exact path={baseURL + '/add-task'} component={AddTaskPage} />
               <Route exact path={baseURL + '/add-appointment'} component={AddAppointPage} />
+              <Route exact path={baseURL + '/all-tasks'} component={AllTasksPage} />
+              <Route exact path={baseURL + '/all-appointments'} component={AllAppointsPage} />
             </div>
           </div>
         </BrowserRouter>
