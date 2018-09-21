@@ -20,9 +20,8 @@ export const login = (username, password) => async dispatch => {
 } 
 
 export const register = (name, username, password) => async dispatch => {
-    const res = await axios.post(baseURL + '/api/register', {name, username, password});
-
-    dispatch({ type: LOGIN, payload: res.data });
+    console.log('registering!');
+    return await axios.post(baseURL + '/api/register', {name, username, password});
 }
 
 // user actions

@@ -6,7 +6,8 @@ import {
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { register } from '../actions/index';
+import { register, login, fetchUser } from '../actions/index';
+import { baseURL } from '../helpers/baseURL';
 
 class Register extends Component {
     constructor(props) {
@@ -15,7 +16,9 @@ class Register extends Component {
             name: '',
             username: '',
             password: '',
-            confirmPassword: ''
+            confirmPassword: '',
+            showValidationMsg: false,
+            userExists: false
         }
     }
 
@@ -23,9 +26,34 @@ class Register extends Component {
         return this.state.name.trim() === '' || this.state.username === '' || this.state.password === '' || this.state.password !== this.state.confirmPassword;
     }
 
-    onRegisterClick() {
+    componentDidUpdate() {
+        console.log('auth is ', this.props.auth);
+        if(this.props.auth && this.props.auth.user) {
+            this.props.history.push(baseURL + '/dashboard');
+            this.props.history.goForward();
+        }
+    }
+
+    async onRegisterClick() {
         if(!this.invalidRegister()) {
-            this.props.register(this.state.name.trim(), this.state.username.trim(), this.state.password);
+            try {
+                await this.props.register(this.state.name.trim(), this.state.username.trim(), this.state.password);
+                console.log('logging in!');
+                await this.props.login(this.state.username.trim(), this.state.password);
+                if(this.props.session.access_token) {
+                    sessionStorage.access_token = this.props.session.access_token;
+                    this.props.fetchUser();
+                }
+            } catch(e) {
+                this.setState({
+                    showValidationMsg: true,
+                    userExists: true
+                });
+            }    
+        } else {
+            this.setState({
+                showValidationMsg: true
+            });
         }
     }
 
@@ -51,9 +79,16 @@ class Register extends Component {
                         placeholder="Username"
                         value={this.state.username}
                         onChange={(event) => {
-                            this.setState({
-                                username: event.target.value
-                            });
+                            if(this.state.userExists) {
+                                this.setState({
+                                    username: event.target.value,
+                                    userExists: false
+                                })
+                            } else {
+                                this.setState({
+                                    username: event.target.value
+                                });
+                            }
                         }} />
                 </Form.Field>
                 <Form.Field>
@@ -87,26 +122,61 @@ class Register extends Component {
         )
     }
 
+    renderValidationMsg() {
+        if(this.state.showValidationMsg) {
+            var msg;
+            if(this.state.name.trim() === '') {
+                msg = "Name cannot be blank!"
+            }
+            else if(this.state.username.trim() === '') {
+                msg = "Username cannot be blank!"
+            }
+            else if(this.state.password === '') {
+                msg = "Must enter a password!"
+            }
+            else if(this.state.confirmPassword !== this.state.password) {
+                msg = "Passwords must match!"
+            }
+            else if(this.state.userExists) {
+                msg = "A user with the same username already exists!"
+            }
+
+            return (
+                <div style={{color: 'red'}}>{msg}</div>
+            )
+        }
+
+        return null;
+    }
+
     render() {
+        console.log('auth here is ', this.props.auth);
+        if(this.props.auth && this.props.auth.user) {
+            return null;
+        }
+
         return(
         <Container>
             <div style={{textAlign: 'center'}}>
                 <h1>Schedule Hero</h1>
                 <div>Register</div>
             </div>
+            {this.renderValidationMsg()}
             {this.renderRegisterForm()}
         </Container>
         );
     }
 }
 
-function mapStateToProps({ session }) {
-    return { session };
+function mapStateToProps({ auth, session }) {
+    return { auth, session };
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        register: register
+        register: register,
+        login: login,
+        fetchUser
     }, dispatch);
 }
 
