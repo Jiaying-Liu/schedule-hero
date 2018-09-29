@@ -11,6 +11,7 @@ import { bindActionCreators } from 'redux';
 import { 
     fetchUser, 
     fetchTasks,
+    updateTask,
     fetchAppointments,
     deleteTask,
     deleteAppointment
@@ -71,13 +72,20 @@ class Dashboard extends Component {
         return (
             <TaskTable 
                 tasks={this.getTasksDueInWeek()} 
-                onDeleteTask={this.onDeleteTask.bind(this)}   
+                onDeleteTask={this.onDeleteTask.bind(this)} 
+                onTaskCheck={this.onTaskCheck.bind(this)}  
             />
         )
     }
 
     async onDeleteTask(id) {
         await this.props.deleteTask(id);
+        this.props.fetchTasks();
+    }
+
+    async onTaskCheck(task) {
+        const { id, name, description, deadline, done } = task;
+        await this.props.updateTask(id, name, description, deadline, !done);
         this.props.fetchTasks();
     }
 
@@ -210,6 +218,7 @@ function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         fetchTasks: fetchTasks,
         fetchUser: fetchUser,
+        updateTask: updateTask,
         fetchAppointments: fetchAppointments,
         deleteTask: deleteTask,
         deleteAppointment

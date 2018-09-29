@@ -28,6 +28,12 @@ class AllTasksPage extends Component {
         this.props.fetchTasks();
     }
 
+    async onTaskCheck(task) {
+        const { id, name, description, deadline, done } = task;
+        await this.props.updateTask(id, name, description, deadline, !done);
+        this.props.fetchTasks();
+    }
+
     render() {
         console.log('rendering task table')
         if(!this.props.tasks || !this.props.tasks.tasks) {
@@ -40,7 +46,8 @@ class AllTasksPage extends Component {
                 <h1 style={{textAlign: 'center'}}>All Tasks</h1>
                 <TaskTable
                     tasks={this.props.tasks.tasks}
-                    onDeleteTask={this.onDeleteTask.bind(this)} />
+                    onDeleteTask={this.onDeleteTask.bind(this)}
+                    onTaskCheck={this.onTaskCheck.bind(this)} />
             </Container>
         )
     }

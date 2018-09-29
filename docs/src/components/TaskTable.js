@@ -52,7 +52,11 @@ class TaskTable extends Component {
                         {moment(task.deadline).format('MMM DD, YYYY HH:mm')}
                     </Table.Cell>
                     <Table.Cell>
-                        <Checkbox checked={task.done} />
+                        <Checkbox 
+                            checked={task.done}
+                            onClick={() => {
+                                this.props.onTaskCheck(task);
+                            }} />
                     </Table.Cell>
                     <Table.Cell>
                         <div 

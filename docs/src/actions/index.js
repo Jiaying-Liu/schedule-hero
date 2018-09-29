@@ -52,6 +52,12 @@ export const deleteTask = id => async (dispatch) => {
     return await axios.delete(baseURL + '/api/task', {data: { id }});
 }
 
+export const updateTask = (id, name, description, deadline, done) => async () => {
+    var body = {id, name, description, deadline, done};
+    axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
+    return await axios.put(baseURL + '/api/task', body);
+}
+
 // appointment actions
 export const fetchAppointments = () => async (dispatch) => {
     axios.defaults.headers.common['Authorization'] = 'JWT ' + sessionStorage.access_token;
