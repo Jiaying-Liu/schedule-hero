@@ -20,7 +20,6 @@ export const login = (username, password) => async dispatch => {
 } 
 
 export const register = (name, username, password) => async dispatch => {
-    console.log('registering!');
     return await axios.post(baseURL + '/api/register', {name, username, password});
 }
 

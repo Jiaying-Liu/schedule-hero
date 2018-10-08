@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     Grid,
-    Button
+    Button,
+    Modal
 } from 'semantic-ui-react';
 import TaskTable from './TaskTable';
 import AppointTable from './AppointTable';
@@ -28,6 +29,13 @@ class Dashboard extends Component {
     constructor(props) {
         super(props);
         BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
+
+        this.state = {
+            showDeleteTask: false,
+            taskToDelete: null,
+            showDeleteAppoint: false,
+            appointToDelete: null
+        }
     }
 
     async componentDidMount() {
@@ -66,13 +74,51 @@ class Dashboard extends Component {
         });
     }
 
+    onDeleteTaskIconClick(task) {
+        this.setState({
+            showDeleteTask: true,
+            taskToDelete: task
+        });
+    }
+
+    confirmDeleteTaskModalRender() {
+        if(!this.state.showDeleteTask) return null;
+        return (
+            <Modal open={this.state.showDeleteTask}>
+                <Modal.Header>Deleting {this.state.taskToDelete.name}</Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        <p>Are you sure you want to delete task: {this.state.taskToDelete.name}?</p>
+                    </Modal.Description>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button
+                        onClick={() => {
+                            this.onDeleteTask(this.state.taskToDelete.id);
+                        }}>
+                        Delete
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            this.setState({
+                                showDeleteTask: false,
+                                taskToDelete: null
+                            });
+                        }}>
+                        Cancel
+                    </Button>
+                </Modal.Actions>
+            </Modal>
+        )
+    }
+
     taskTableRender() {
         if(!this.props.tasks || !this.props.tasks.tasks) return null;
 
         return (
             <TaskTable 
                 tasks={this.getTasksDueInWeek()} 
-                onDeleteTask={this.onDeleteTask.bind(this)} 
+                onDeleteTask={this.onDeleteTaskIconClick.bind(this)} 
                 onTaskCheck={this.onTaskCheck.bind(this)}  
             />
         )
@@ -81,6 +127,10 @@ class Dashboard extends Component {
     async onDeleteTask(id) {
         await this.props.deleteTask(id);
         this.props.fetchTasks();
+        this.setState({
+            showDeleteTask: false,
+            taskToDelete: null
+        })
     }
 
     async onTaskCheck(task) {
@@ -205,6 +255,7 @@ class Dashboard extends Component {
                         {this.appointButtonRender()}
                     </Grid.Column>
                 </Grid>
+                {this.confirmDeleteTaskModalRender()}
             </div>
         )
     }

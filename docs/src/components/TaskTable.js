@@ -71,7 +71,7 @@ class TaskTable extends Component {
                             <i 
                                 title='Delete'
                                 onClick={() => {
-                                    this.props.onDeleteTask(task.id);
+                                    this.props.onDeleteTask(task);
                                 }}
                                 style={{ paddingRight: '8px' }}
                                 className='fa fa-trash fa-lg' />

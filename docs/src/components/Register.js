@@ -27,7 +27,6 @@ class Register extends Component {
     }
 
     componentDidUpdate() {
-        console.log('auth is ', this.props.auth);
         if(this.props.auth && this.props.auth.user) {
             this.props.history.push(baseURL + '/dashboard');
             this.props.history.goForward();
@@ -38,7 +37,6 @@ class Register extends Component {
         if(!this.invalidRegister()) {
             try {
                 await this.props.register(this.state.name.trim(), this.state.username.trim(), this.state.password);
-                console.log('logging in!');
                 await this.props.login(this.state.username.trim(), this.state.password);
                 if(this.props.session.access_token) {
                     sessionStorage.access_token = this.props.session.access_token;
