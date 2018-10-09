@@ -3,6 +3,7 @@ import {
     Container
 } from 'semantic-ui-react';
 import TaskTable from './TaskTable';
+import DeleteTaskModal from './DeleteTaskModal'
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
@@ -13,6 +14,15 @@ import {
 import { baseURL } from '../helpers/baseURL';
 
 class AllTasksPage extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            taskToDelete: null,
+            showDeleteTask: false
+        }
+    }
+
     async componentDidMount() {
         await this.props.fetchUser();
             if(this.props.auth && this.props.auth.user) {
@@ -23,9 +33,37 @@ class AllTasksPage extends Component {
             }
     }
 
+    confirmDeleteTaskModalRender() {
+        if(!this.state.showDeleteTask) return null;
+        return (
+            <DeleteTaskModal
+                showDeleteTask={this.state.showDeleteTask}
+                task={this.state.taskToDelete}
+                onDeleteTask={this.onDeleteTask.bind(this)}
+                cancelCallback={() => {
+                    this.setState({
+                        showDeleteTask: false,
+                        taskToDelete: null
+                    });
+                }} />
+        );
+    }
+
+    onDeleteTaskIconClick(task) {
+        console.log('deleting icon click');
+        this.setState({
+            showDeleteTask: true,
+            taskToDelete: task
+        });
+    }
+
     async onDeleteTask(id) {
         await this.props.deleteTask(id);
         this.props.fetchTasks();
+        this.setState({
+            showDeleteTask: false,
+            taskToDelete: null
+        });
     }
 
     async onTaskCheck(task) {
@@ -35,9 +73,7 @@ class AllTasksPage extends Component {
     }
 
     render() {
-        console.log('rendering task table')
         if(!this.props.tasks || !this.props.tasks.tasks) {
-            console.log('here');
             return null;
         }
 
@@ -46,8 +82,9 @@ class AllTasksPage extends Component {
                 <h1 style={{textAlign: 'center'}}>All Tasks</h1>
                 <TaskTable
                     tasks={this.props.tasks.tasks}
-                    onDeleteTask={this.onDeleteTask.bind(this)}
+                    onDeleteTask={this.onDeleteTaskIconClick.bind(this)}
                     onTaskCheck={this.onTaskCheck.bind(this)} />
+                {this.confirmDeleteTaskModalRender()}
             </Container>
         )
     }

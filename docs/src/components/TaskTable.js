@@ -6,7 +6,8 @@ import {
 import moment from 'moment';
 
 class TaskTable extends Component {
-
+    // TODO: For now leave out Editing capabilities.
+    // add it later.
     taskTableHeaderRender() {
         return (
             <Table.Header>
@@ -24,7 +25,7 @@ class TaskTable extends Component {
                         Done
                     </Table.HeaderCell>
                     <Table.HeaderCell>
-                        Edit/Delete
+                        Delete
                     </Table.HeaderCell>
                 </Table.Row>
             </Table.Header>
@@ -64,10 +65,10 @@ class TaskTable extends Component {
                                 display: 'flex',
                                 justifyContent: 'flex-end'
                             }}>
-                            <i
+                            {/* <i
                                 style={{ paddingRight: '8px' }}
                                 title='Edit'
-                                className='fa fa-edit fa-lg' />
+                                className='fa fa-edit fa-lg' /> */}
                             <i 
                                 title='Delete'
                                 onClick={() => {

@@ -6,6 +6,8 @@ import {
 } from 'semantic-ui-react';
 import TaskTable from './TaskTable';
 import AppointTable from './AppointTable';
+import DeleteTaskModal from './DeleteTaskModal';
+import DeleteAppointModal from './DeleteAppointModal';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -81,35 +83,43 @@ class Dashboard extends Component {
         });
     }
 
+    onDeleteAppointIconClick(appoint) {
+        this.setState({
+            showDeleteAppoint: true,
+            appointToDelete: appoint
+        });
+    }
+
     confirmDeleteTaskModalRender() {
         if(!this.state.showDeleteTask) return null;
         return (
-            <Modal open={this.state.showDeleteTask}>
-                <Modal.Header>Deleting {this.state.taskToDelete.name}</Modal.Header>
-                <Modal.Content>
-                    <Modal.Description>
-                        <p>Are you sure you want to delete task: {this.state.taskToDelete.name}?</p>
-                    </Modal.Description>
-                </Modal.Content>
-                <Modal.Actions>
-                    <Button
-                        onClick={() => {
-                            this.onDeleteTask(this.state.taskToDelete.id);
-                        }}>
-                        Delete
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            this.setState({
-                                showDeleteTask: false,
-                                taskToDelete: null
-                            });
-                        }}>
-                        Cancel
-                    </Button>
-                </Modal.Actions>
-            </Modal>
-        )
+            <DeleteTaskModal
+                showDeleteTask={this.state.showDeleteTask}
+                task={this.state.taskToDelete}
+                onDeleteTask={this.onDeleteTask.bind(this)}
+                cancelCallback={() => {
+                    this.setState({
+                        showDeleteTask: false,
+                        taskToDelete: null
+                    });
+                }} />
+        );
+    }
+
+    confirmDeleteAppointModalRender() {
+        if(!this.state.showDeleteAppoint) return null;
+        return (
+            <DeleteAppointModal
+                showDeleteAppoint={this.state.showDeleteAppoint}
+                appoint={this.state.appointToDelete}
+                onDeleteAppoint={this.onDeleteAppoint.bind(this)}
+                cancelCallback={() => {
+                    this.setState({
+                        showDeleteAppoint: false,
+                        appointToDelete: null
+                    });
+                }} />
+        );
     }
 
     taskTableRender() {
@@ -130,7 +140,7 @@ class Dashboard extends Component {
         this.setState({
             showDeleteTask: false,
             taskToDelete: null
-        })
+        });
     }
 
     async onTaskCheck(task) {
@@ -172,13 +182,17 @@ class Dashboard extends Component {
         return (
             <AppointTable
                 appointments={this.getAppointsDueInWeek()}
-                onDeleteAppoint={this.onDeleteAppoint.bind(this)} />
+                onDeleteAppoint={this.onDeleteAppointIconClick.bind(this)} />
         )
     }
 
     async onDeleteAppoint(id) {
         await this.props.deleteAppointment(id);
         this.props.fetchAppointments();
+        this.setState({
+            showDeleteAppoint: false,
+            appointToDelete: null
+        });
     }
 
     appointButtonRender() {
@@ -209,7 +223,7 @@ class Dashboard extends Component {
                 allDay: false,
                 startDate: new Date(task.deadline),
                 endDate: new Date(task.deadline),
-                title: 'TASK: ' + task.name
+                title: task.name
             }
         });
 
@@ -218,7 +232,7 @@ class Dashboard extends Component {
                 allDay: false,
                 startDate: new Date(appoint.start),
                 endDate: new Date(appoint.end),
-                title: 'APPOINTMENT ' + appoint.name
+                title: appoint.name
             });
         });
 
@@ -256,6 +270,7 @@ class Dashboard extends Component {
                     </Grid.Column>
                 </Grid>
                 {this.confirmDeleteTaskModalRender()}
+                {this.confirmDeleteAppointModalRender()}
             </div>
         )
     }
