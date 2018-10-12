@@ -9,6 +9,7 @@ import AppointTable from './AppointTable';
 import DeleteTaskModal from './DeleteTaskModal';
 import DeleteAppointModal from './DeleteAppointModal';
 import TaskModal from './TaskModal';
+import AppointModal from './AppointModal';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -39,7 +40,9 @@ class Dashboard extends Component {
             showDeleteAppoint: false,
             appointToDelete: null,
             showTaskModal: false,
-            taskToShow: null
+            taskToShow: null,
+            showAppointModal: false,
+            appointToShow: null
         }
     }
 
@@ -215,11 +218,18 @@ class Dashboard extends Component {
         );
     }
 
-    onCalendarTaskClick(task) {
-        this.setState({
-            showTaskModal: true,
-            taskToShow: task
-        });
+    onCalendarEventClick(event) {
+        if(event.type === 'task') {
+            this.setState({
+                showTaskModal: true,
+                taskToShow: event
+            });
+        } else if(event.type === 'appoint') {
+            this.setState({
+                showAppointModal: true,
+                appointToShow: event
+            })
+        }
     }
 
     renderTaskModal() {
@@ -238,6 +248,22 @@ class Dashboard extends Component {
         );
     }
 
+    renderAppointModal() {
+        if(!this.state.showAppointModal) return null;
+
+        return (
+            <AppointModal
+                open={this.state.showAppointModal}
+                appoint={this.state.appointToShow}
+                closeCallback={() => {
+                    this.setState({
+                        showAppointModal: false,
+                        appointToShow: null
+                    })
+                }} />
+        );
+    }
+
     createEvents() {
         if(!this.props.tasks || !this.props.tasks.tasks || !this.props.appointments || !this.props.appointments.appointments) {
             return [];
@@ -245,21 +271,27 @@ class Dashboard extends Component {
 
         var events = this.props.tasks.tasks.map(task => {
             return {
+                type: 'task',
                 allDay: false,
                 startDate: new Date(task.deadline),
                 endDate: new Date(task.deadline),
                 title: task.name,
                 description: task.description,
-                done: task.done
+                done: task.done,
+                deadline: task.deadline
             }
         });
 
         this.props.appointments.appointments.forEach(appoint => {
             events.push({
+                type: 'appoint',
                 allDay: false,
                 startDate: new Date(appoint.start),
                 endDate: new Date(appoint.end),
-                title: appoint.name
+                title: appoint.name,
+                start: appoint.start,
+                end: appoint.end,
+                description: appoint.description
             });
         });
 
@@ -280,7 +312,7 @@ class Dashboard extends Component {
                         <div className='schedule-hero-calendar'>
                             <BigCalendar
                                 events={this.createEvents()}
-                                onSelectEvent={this.onCalendarTaskClick.bind(this)}
+                                onSelectEvent={this.onCalendarEventClick.bind(this)}
                                 startAccessor='startDate'
                                 endAccessor='endDate'
                                 views={['month', 'week', 'agenda']} />
@@ -300,6 +332,7 @@ class Dashboard extends Component {
                 {this.confirmDeleteTaskModalRender()}
                 {this.confirmDeleteAppointModalRender()}
                 {this.renderTaskModal()}
+                {this.renderAppointModal()}
             </div>
         )
     }
