@@ -29,7 +29,6 @@ class UserRegister(Resource):
 
             return {"message": "User created successfully."}, 201
         else:
-            ##logging.debug(user.name)
             return {"message": "A user with that username already exists!"}, 400
 
 

@@ -8,6 +8,7 @@ import TaskTable from './TaskTable';
 import AppointTable from './AppointTable';
 import DeleteTaskModal from './DeleteTaskModal';
 import DeleteAppointModal from './DeleteAppointModal';
+import TaskModal from './TaskModal';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
@@ -36,7 +37,9 @@ class Dashboard extends Component {
             showDeleteTask: false,
             taskToDelete: null,
             showDeleteAppoint: false,
-            appointToDelete: null
+            appointToDelete: null,
+            showTaskModal: false,
+            taskToShow: null
         }
     }
 
@@ -212,6 +215,28 @@ class Dashboard extends Component {
         );
     }
 
+    onCalendarTaskClick(task) {
+        this.setState({
+            showTaskModal: true,
+            taskToShow: task
+        });
+    }
+
+    renderTaskModal() {
+        if(!this.state.showTaskModal) return null;
+
+        return (
+            <TaskModal
+                open={this.state.showTaskModal}
+                task={this.state.taskToShow}
+                closeCallback={() => {
+                    this.setState({
+                        showTaskModal: false,
+                        taskToShow: null
+                    })
+                }} />
+        );
+    }
 
     createEvents() {
         if(!this.props.tasks || !this.props.tasks.tasks || !this.props.appointments || !this.props.appointments.appointments) {
@@ -223,7 +248,9 @@ class Dashboard extends Component {
                 allDay: false,
                 startDate: new Date(task.deadline),
                 endDate: new Date(task.deadline),
-                title: task.name
+                title: task.name,
+                description: task.description,
+                done: task.done
             }
         });
 
@@ -253,6 +280,7 @@ class Dashboard extends Component {
                         <div className='schedule-hero-calendar'>
                             <BigCalendar
                                 events={this.createEvents()}
+                                onSelectEvent={this.onCalendarTaskClick.bind(this)}
                                 startAccessor='startDate'
                                 endAccessor='endDate'
                                 views={['month', 'week', 'agenda']} />
@@ -271,6 +299,7 @@ class Dashboard extends Component {
                 </Grid>
                 {this.confirmDeleteTaskModalRender()}
                 {this.confirmDeleteAppointModalRender()}
+                {this.renderTaskModal()}
             </div>
         )
     }
